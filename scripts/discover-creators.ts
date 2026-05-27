@@ -254,7 +254,7 @@ async function processCategory(
     process.stdout.write(`  search "${queries[qi]}" → ${ids.length} results\n`);
   }
 
-  const newCandidates = [...candidateIds].filter((id) => !seenChannels.has(id));
+  const newCandidates = Array.from(candidateIds).filter((id) => !seenChannels.has(id));
   console.log(`  ${candidateIds.size} unique candidates (${newCandidates.length} not yet processed this run)`);
 
   if (newCandidates.length === 0) {
@@ -290,11 +290,12 @@ async function processCategory(
     const views  = parseInt(ch.statistics.viewCount       ?? '0', 10);
     const videos = parseInt(ch.statistics.videoCount      ?? '0', 10);
 
-    const { data: existing } = await supabase
+    const { data: existingRaw } = await supabase
       .from('creators')
       .select('id, primary_category')
       .eq('youtube_channel_id', ch.id)
       .maybeSingle();
+    const existing = existingRaw as { id: string; primary_category: string | null } | null;
 
     const payload: Record<string, unknown> = {
       youtube_channel_id: ch.id,
@@ -317,7 +318,8 @@ async function processCategory(
 
     const { error: upsertErr } = await supabase
       .from('creators')
-      .upsert(payload, { onConflict: 'youtube_channel_id' });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .upsert(payload as any, { onConflict: 'youtube_channel_id' });
 
     if (upsertErr) {
       console.error(`  SKIP ${ch.snippet.title}: ${upsertErr.message}`);
