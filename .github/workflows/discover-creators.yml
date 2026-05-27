@@ -1,0 +1,43 @@
+name: Discover Creators
+
+on:
+  schedule:
+    # Every Monday at 03:00 UTC (after YouTube quota resets at midnight Pacific)
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Max channels to discover per category'
+        required: false
+        default: '50'
+      min_subs:
+        description: 'Minimum subscriber count'
+        required: false
+        default: '100000'
+
+jobs:
+  discover:
+    name: Discover & rank creators
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run discovery pipeline
+        env:
+          YOUTUBE_API_KEY:              ${{ secrets.YOUTUBE_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL:     ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY:    ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          LIMIT="${{ github.event.inputs.limit || '50' }}"
+          MIN_SUBS="${{ github.event.inputs.min_subs || '100000' }}"
+          npm run discover:creators -- --limit=$LIMIT --min-subs=$MIN_SUBS
