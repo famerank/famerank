@@ -29,6 +29,8 @@ function RankChange({ current, previous }: { current: number; previous: number |
   return <span className="text-obsidian-600 text-sm">—</span>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Global Rankings — FameRank',
   description: 'The definitive all-time creator rankings, scored by subscribers, views, and consistency.',
