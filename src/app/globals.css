@@ -13,7 +13,7 @@
   }
 
   body {
-    @apply bg-white text-ink-950 antialiased;
+    @apply bg-white text-ink-950 antialiased font-sans;
     font-feature-settings: "kern" 1, "liga" 1, "cv11" 1;
   }
 
