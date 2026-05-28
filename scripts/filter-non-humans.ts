@@ -55,7 +55,7 @@ const R4_BLOCKLIST = [
   'Sky Sports', 'TNT Sports', 'CBS Sports', 'BBC', 'CNN', 'Bloomberg',
   'FRANCE 24', 'ITV Sport', 'GBNews', 'LBC', 'TalkTV', 'DAZN',
   'SuperSport', 'CNA', 'Telemundo', 'AP Archive', 'CANAL+',
-  'Amazon Prime Video', 'Paramount Plus',
+  'Amazon Prime Video', 'Paramount Plus', 'Comedy Central',
 ];
 
 // ─── Rule 5 — Generic/aggregator channels ────────────────────────────────────
@@ -64,7 +64,7 @@ const R5_PATTERNS: Array<{ re: RegExp; label: string }> = [
   { re: /\bWORKOUT\b/,      label: 'All-caps WORKOUT' },
   { re: /\bGYM\b/,          label: 'All-caps GYM' },
   { re: /\bHOMEWORKOUT\b/,  label: 'All-caps HOMEWORKOUT' },
-  { re: /DIY\s+Crafts/i,    label: 'DIY Crafts' },
+  { re: /\bDIY\b/i,          label: 'DIY' },
   { re: /\bASMR\b/i,        label: 'ASMR' },
   { re: /\bRelaxing\b/i,    label: 'Relaxing' },
   { re: /\bAmbient\b/i,     label: 'Ambient' },
@@ -121,6 +121,23 @@ const BLOCKLIST = [
   'Bright Side',
   '5-Minute Crafts',
   'BRIGHT SIDE',
+  // Platform / corporate channels
+  'YouTube',
+  // Comedy aggregators (not individual comedians)
+  'Goldmines',
+  'LIV Comedy',
+  'LIV Kids',
+  'Comedy Captain',
+  'NOW COMEDY',
+  'All Things Comedy',
+  'Sri Balaji Comedy',
+  // Kids aggregators
+  'SLICK SLIME SAM',
+  'PunToon Kids',
+  'Kids Zone Pakistan',
+  'Play Kids',
+  'Moshi Kids',
+  'Baby Shark Classroom',
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
