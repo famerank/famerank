@@ -22,6 +22,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
 import { createClient } from '@supabase/supabase-js';
+import { generateBio } from './lib/generate-bio';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -44,6 +45,7 @@ const MEGA_SWEEP      = hasFlag('mega-sweep');
 const PAGES_PER_QUERY = 2;
 const MAX_PER_BATCH   = 50;
 const SEARCH_DELAY_MS = 7_000; // stay under 10 search.list calls/minute
+const BIO_DELAY_MS    = 350;
 
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
 
@@ -316,17 +318,30 @@ async function processCategory(
       payload.primary_category = null;
     }
 
-    const { error: upsertErr } = await supabase
+    const { data: upsertData, error: upsertErr } = await supabase
       .from('creators')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .upsert(payload as any, { onConflict: 'youtube_channel_id' });
+      .upsert(payload as any, { onConflict: 'youtube_channel_id' })
+      .select('id')
+      .single();
 
     if (upsertErr) {
       console.error(`  SKIP ${ch.snippet.title}: ${upsertErr.message}`);
       continue;
     }
 
-    if (existing) { updatedCount++; } else { newCount++; }
+    if (existing) {
+      updatedCount++;
+    } else {
+      newCount++;
+      if (process.env.ANTHROPIC_API_KEY && upsertData?.id) {
+        await sleep(BIO_DELAY_MS);
+        const bio = await generateBio(ch.snippet.title, ch.snippet.description ?? null);
+        if (bio) {
+          await supabase.from('creators').update({ generated_bio: bio }).eq('id', upsertData.id);
+        }
+      }
+    }
   }
 
   return { newCount, updatedCount };

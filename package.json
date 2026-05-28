@@ -9,9 +9,13 @@
     "lint": "next lint",
     "seed:categories": "tsx seeds/categories.ts",
     "fetch:creators": "tsx scripts/fetch-youtube-creators.ts",
-    "discover:creators": "tsx scripts/discover-creators.ts"
+    "discover:creators": "tsx scripts/discover-creators.ts",
+    "filter:creators": "tsx scripts/filter-non-humans.ts",
+    "sweep:targeted": "tsx scripts/targeted-sweep.ts",
+    "backfill:bios": "tsx scripts/backfill-bios.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.99.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.1",
     "next": "14.2.35",

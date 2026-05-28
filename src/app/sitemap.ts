@@ -8,7 +8,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const { data: creators } = await supabase
     .from('creators')
-    .select('id, updated_at');
+    .select('id, updated_at')
+    .eq('is_human', true);
 
   const creatorEntries: MetadataRoute.Sitemap = (creators ?? []).map((c) => ({
     url: `${BASE_URL}/creator/${c.id}`,

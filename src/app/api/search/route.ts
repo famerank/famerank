@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
   const { data: creators, error } = await supabase
     .from('creators')
     .select('id, channel_name, profile_image_url, subscriber_count')
+    .eq('is_human', true)
     .ilike('channel_name', `%${q}%`)
     .order('subscriber_count', { ascending: false })
     .limit(limit);

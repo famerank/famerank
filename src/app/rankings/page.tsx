@@ -49,7 +49,7 @@ export default async function RankingsPage() {
       rank_position,
       previous_rank_position,
       rank_score,
-      creators (
+      creators!inner (
         id,
         channel_name,
         profile_image_url,
@@ -57,6 +57,7 @@ export default async function RankingsPage() {
       )
     `)
     .eq('period', 'alltime')
+    .eq('creators.is_human', true)
     .order('rank_position');
 
   const rows = (rankings ?? []) as unknown as RankingRow[];

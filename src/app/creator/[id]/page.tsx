@@ -13,6 +13,7 @@ type Creator = {
   id: string;
   channel_name: string;
   description: string | null;
+  generated_bio: string | null;
   profile_image_url: string | null;
   subscriber_count: number | null;
   view_count: number | null;
@@ -51,6 +52,7 @@ export default async function CreatorPage({ params }: { params: { id: string } }
       id,
       channel_name,
       description,
+      generated_bio,
       profile_image_url,
       subscriber_count,
       view_count,
@@ -61,6 +63,7 @@ export default async function CreatorPage({ params }: { params: { id: string } }
       rankings (rank_position, rank_score, period)
     `)
     .eq('id', params.id)
+    .eq('is_human', true)
     .single();
 
   if (error || !data) notFound();
@@ -135,15 +138,39 @@ export default async function CreatorPage({ params }: { params: { id: string } }
             <StatCard label="Videos"       value={formatCount(creator.video_count)} />
           </div>
 
-          {/* Description */}
-          {creator.description && (
-            <div className="border-t border-ink-200 pt-8">
-              <h2 className="text-[10px] font-semibold uppercase tracking-widest text-ink-400 mb-4">
-                About
-              </h2>
-              <p className="text-ink-600 leading-relaxed max-w-2xl line-clamp-6 font-light">
-                {creator.description}
-              </p>
+          {/* Bio / Description */}
+          {(creator.generated_bio || creator.description) && (
+            <div className="border-t border-ink-200 pt-8 space-y-6">
+              {creator.generated_bio && (
+                <div>
+                  <h2 className="text-[10px] font-semibold uppercase tracking-widest text-ink-400 mb-4">
+                    About
+                  </h2>
+                  <p className="text-ink-700 leading-relaxed max-w-2xl font-light text-base">
+                    {creator.generated_bio}
+                  </p>
+                </div>
+              )}
+              {creator.description && !creator.generated_bio && (
+                <div>
+                  <h2 className="text-[10px] font-semibold uppercase tracking-widest text-ink-400 mb-4">
+                    About
+                  </h2>
+                  <p className="text-ink-600 leading-relaxed max-w-2xl line-clamp-6 font-light">
+                    {creator.description}
+                  </p>
+                </div>
+              )}
+              {creator.description && creator.generated_bio && (
+                <div>
+                  <h2 className="text-[10px] font-semibold uppercase tracking-widest text-ink-400 mb-3">
+                    Channel Description
+                  </h2>
+                  <p className="text-ink-400 leading-relaxed max-w-2xl line-clamp-4 text-sm font-light">
+                    {creator.description}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

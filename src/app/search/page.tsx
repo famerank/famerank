@@ -35,6 +35,7 @@ export default async function SearchPage({
     const { data: creators } = await supabase
       .from('creators')
       .select('id, channel_name, profile_image_url, subscriber_count')
+      .eq('is_human', true)
       .ilike('channel_name', `%${query}%`)
       .order('subscriber_count', { ascending: false })
       .limit(50);
