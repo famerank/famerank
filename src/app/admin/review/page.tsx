@@ -37,17 +37,6 @@ export default async function AdminReviewPage() {
     revalidatePath('/admin/review');
   }
 
-  async function markAsNonHuman(formData: FormData) {
-    'use server';
-    const id = formData.get('creatorId') as string;
-    const svc = createServiceClient();
-    await svc
-      .from('creators')
-      .update({ is_human: false })
-      .eq('id', id);
-    revalidatePath('/admin/review');
-  }
-
   // ── Migration not run yet ───────────────────────────────────────────────────
   if (error) {
     const needsMigration = error.message.includes('is_human') || error.message.includes('column');
@@ -200,7 +189,7 @@ CREATE INDEX IF NOT EXISTS creators_is_human_idx ON creators (is_human);`}
           <h2 className="text-sm font-semibold text-ink-500 mb-3 uppercase tracking-widest">
             Manually Flag a Creator
           </h2>
-          <ManualFlagForm markAsNonHuman={markAsNonHuman} supabase={supabase} />
+          <ManualFlagForm supabase={supabase} />
         </div>
       </div>
     </div>
@@ -211,10 +200,8 @@ CREATE INDEX IF NOT EXISTS creators_is_human_idx ON creators (is_human);`}
 // Simple search box to look up and flag a creator by name
 
 async function ManualFlagForm({
-  markAsNonHuman,
   supabase,
 }: {
-  markAsNonHuman: (fd: FormData) => Promise<void>;
   supabase: ReturnType<typeof createServiceClient>;
 }) {
   // Fetch a sample of human creators for the manual flag section
