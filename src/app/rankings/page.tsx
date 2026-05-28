@@ -12,6 +12,7 @@ type Creator = {
   channel_name: string;
   profile_image_url: string | null;
   subscriber_count: number | null;
+  is_human: boolean;
 };
 
 type RankingRow = {
@@ -53,14 +54,17 @@ export default async function RankingsPage() {
         id,
         channel_name,
         profile_image_url,
-        subscriber_count
+        subscriber_count,
+        is_human
       )
     `)
     .eq('period', 'alltime')
-    .eq('creators.is_human', true)
     .order('rank_position');
 
-  const rows = (rankings ?? []) as unknown as RankingRow[];
+  // PostgREST embedded-resource filters (.eq on a joined table) don't reliably
+  // exclude parent rows. Filter in application code instead.
+  const rows = ((rankings ?? []) as unknown as RankingRow[])
+    .filter((r) => r.creators?.is_human === true);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
